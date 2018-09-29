@@ -5,9 +5,13 @@ defmodule YnabApi.Application do
 
   use Application
 
+  alias YnabApi.WorkerSupervisor
+
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      {Registry, keys: :unique, name: Registry.Workers},
+      {DynamicSupervisor, strategy: :one_for_one, name: WorkerSupervisor}
       # Starts a worker by calling: YnabApi.Worker.start_link(arg)
       # {YnabApi.Worker, arg},
     ]
