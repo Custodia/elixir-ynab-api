@@ -32,6 +32,10 @@ defmodule YnabApi.Worker do
   end
 
   @impl GenServer
+  def handle_call(:get_user, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/user", Models.User)
+
+  @impl GenServer
   def handle_info(:timeout, access_token) do
     {:stop, {:shutdown, :timeout}, access_token}
   end
@@ -66,6 +70,16 @@ defmodule YnabApi.Worker do
     "Authorization": "Bearer #{access_token}",
     "Accept": "Application/json; Charset=utf-8"
   ]
+
+  @spec request_and_parse_case(binary(), binary(), module()) :: {:reply, struct(), binary()} | {:reply, {:error, any()}, binary()}
+  defp request_and_parse_case(access_token, url, model) do
+    case request_and_parse(access_token, url, model) do
+      result = {:ok, %^model{}} ->
+        {:reply, result, access_token}
+      error_tuple = {:error, _error} ->
+        {:reply, error_tuple, access_token}
+    end
+  end
 
   @spec request_and_parse(binary(), binary(), module()) :: {:ok, struct()} | {:error, HTTPoison.Response.t} | {:error, HTTPoison.Error.t} | {:error, Jason.DecodeError.t}
   defp request_and_parse(access_token, url, model) do
