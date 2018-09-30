@@ -14,20 +14,16 @@ defmodule YnabApi.Models.User do
   """
   @spec parse(binary() | map()) :: {:ok, t} | {:error, Jason.DecodeError.t}
   def parse(json) when is_binary(json) do
-    case Jason.decode(json) do
+    case Jason.decode(json, [keys: :atoms!]) do
       {:ok, json} ->
         parse(json)
       error ->
         error
     end
   end
-  def parse(json) do
-    user =
-      json
-      |> Map.fetch!("data")
-      |> Map.fetch!("user")
+  def parse(%{data: %{user: user}}) do
     user = %User{
-      id: Map.fetch!(user, "id")
+      id: user.id
     }
     IO.inspect user
     {:ok, user}
