@@ -7,6 +7,8 @@ defmodule YnabApi.Worker do
   @base_url "https://api.youneedabudget.com/v1"
   @timeout 900000 # 15 minutes
 
+  @type request :: :get_user | :get_budgets
+
   def start_link(access_token) do
     name = get_name(access_token)
     GenServer.start_link(__MODULE__, access_token, name: name)
@@ -34,6 +36,8 @@ defmodule YnabApi.Worker do
   @impl GenServer
   def handle_call(:get_user, _from, access_token), do:
     request_and_parse_case(access_token, "#{@base_url}/user", Models.User)
+  def handle_call(:get_budgets, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets", Models.BudgetSummary)
 
   @impl GenServer
   def handle_info(:timeout, access_token) do
@@ -71,17 +75,21 @@ defmodule YnabApi.Worker do
     "Accept": "Application/json; Charset=utf-8"
   ]
 
-  @spec request_and_parse_case(binary(), binary(), module()) :: {:reply, struct(), binary()} | {:reply, {:error, any()}, binary()}
+  @spec request_and_parse_case(binary(), binary(), module()) :: {:reply, struct(), binary()} | {:reply, list(struct()), binary()} | {:reply, {:error, any()}, binary()}
   defp request_and_parse_case(access_token, url, model) do
     case request_and_parse(access_token, url, model) do
       result = {:ok, %^model{}} ->
+        {:reply, result, access_token}
+      result = {:ok, [%^model{} | _tail]} ->
+        {:reply, result, access_token}
+      result = {:ok, []} ->
         {:reply, result, access_token}
       error_tuple = {:error, _error} ->
         {:reply, error_tuple, access_token}
     end
   end
 
-  @spec request_and_parse(binary(), binary(), module()) :: {:ok, struct()} | {:error, HTTPoison.Response.t} | {:error, HTTPoison.Error.t} | {:error, Jason.DecodeError.t}
+  @spec request_and_parse(binary(), binary(), module()) :: {:ok, struct()} | {:ok, list(struct())} | {:error, HTTPoison.Response.t} | {:error, HTTPoison.Error.t} | {:error, Jason.DecodeError.t}
   defp request_and_parse(access_token, url, model) do
     headers = get_headers(access_token)
 
