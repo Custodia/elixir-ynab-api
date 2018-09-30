@@ -10,9 +10,9 @@ defmodule YnabApi.Models.User do
   @type t :: %User{id: binary()}
 
   @doc """
-  Parses User struct from json payload.
+  Parses User struct from binary encoded JSON or already decoded JSON.
   """
-  @spec parse(binary() | map()) :: {:ok, t} | {:error, Jason.DecodeError.t}
+  @spec parse(binary() | map()) :: {:ok, YnabApi.Models.User.t} | {:error, Jason.DecodeError.t}
   def parse(json) when is_binary(json) do
     case Jason.decode(json, [keys: :atoms!]) do
       {:ok, json} ->
@@ -25,7 +25,21 @@ defmodule YnabApi.Models.User do
     user = %User{
       id: user.id
     }
-    IO.inspect user
     {:ok, user}
+  end
+
+  @doc """
+  Parses a User struct from binary encoded JSON or already decoded JSON.
+
+  Similar to `parse/1` except it will unwrap the error tuple and raise in case of errors.
+  """
+  @spec parse!(binary() | map()) :: YnabApi.Models.User.t | no_return()
+  def parse!(json) do
+    case parse(json) do
+      {:ok, result = %User{}} ->
+        result
+      {:error, error} ->
+        raise error
+    end
   end
 end
