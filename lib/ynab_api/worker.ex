@@ -58,13 +58,16 @@ defmodule YnabApi.Worker do
 
   # Helper functions
 
+  @spec get_name(binary()) :: GenServer.name()
   defp get_name(access_token), do: {:via, Registry, {Registry.Workers, access_token}}
 
+  @spec get_headers(binary()) :: keyword(binary())
   defp get_headers(access_token), do: [
     "Authorization": "Bearer #{access_token}",
     "Accept": "Application/json; Charset=utf-8"
   ]
 
+  @spec request_and_parse(binary(), binary(), module()) :: {:ok, struct()} | {:error, HTTPoison.Response.t} | {:error, HTTPoison.Error.t} | {:error, Jason.DecodeError.t}
   defp request_and_parse(access_token, url, model) do
     headers = get_headers(access_token)
 

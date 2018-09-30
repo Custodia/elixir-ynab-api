@@ -7,9 +7,12 @@ defmodule YnabApi.Models.User do
   @enforce_keys [:id]
   defstruct [:id]
 
+  @type t :: %User{id: binary()}
+
   @doc """
   Parses User struct from json payload.
   """
+  @spec parse(binary() | map()) :: {:ok, t} | {:error, Jason.DecodeError.t}
   def parse(json) when is_binary(json) do
     case Jason.decode(json) do
       {:ok, json} ->
