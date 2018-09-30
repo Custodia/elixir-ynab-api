@@ -24,12 +24,17 @@ defmodule YnabApi.Worker do
     headers = get_headers(access_token)
 
     case HTTPoison.get(url, headers) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: _body}} ->
-        {:noreply, access_token, @timeout}
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        case Jason.decode(body) do
+          {:ok, _json} ->
+            {:noreply, access_token, @timeout}
+          {:error, error = %Jason.DecodeError{}} ->
+            {:stop, {:shutdown, error}, access_token}
+        end
       {:ok, response = %HTTPoison.Response{}} ->
-        {:stop, response, access_token}
+        {:stop, {:shutdown, response}, access_token}
       {:error, error = %HTTPoison.Error{}} ->
-        {:stop, error, access_token}
+        {:stop, {:shutdown, error}, access_token}
     end
   end
 
@@ -39,19 +44,22 @@ defmodule YnabApi.Worker do
   end
 
   @impl GenServer
-  def terminate(response = %HTTPoison.Response{status_code: status_code}, _access_token) do
+  def terminate({:shutdown, response = %HTTPoison.Response{status_code: status_code}}, _access_token) do
     Logger.warn("Received invalid response from api (#{status_code})", [
       status_code: status_code,
       response: response
     ])
-    Logger.disable(self())
   end
-  def terminate(error = %HTTPoison.Error{reason: reason}, _access_token) do
+  def terminate({:shutdown, error = %HTTPoison.Error{reason: reason}}, _access_token) do
     Logger.warn("HTTPoison failed:\n#{reason}", [
       reason: reason,
       error: error
     ])
-    Logger.disable(self())
+  end
+  def terminate({:shutdown, error = %Jason.DecodeError{}}, _access_token) do
+    Logger.warn("YNAB api returned invalid payload", [
+      error: error
+    ])
   end
   def terminate({:shutdown, :timeout}, _access_token), do: nil
 
