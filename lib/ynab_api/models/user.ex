@@ -12,7 +12,7 @@ defmodule YnabApi.Models.User do
   @doc """
   Parses User struct from binary encoded JSON or already decoded JSON.
   """
-  @spec parse(binary() | map()) :: {:ok, YnabApi.Models.User.t} | {:error, Jason.DecodeError.t}
+  @spec parse(binary() | map()) :: {:ok, YnabApi.Models.User.t} | {:error, YnabApi.Models.Error.t} | {:error, Jason.DecodeError.t}
   def parse(json) when is_binary(json) do
     case Jason.decode(json, [keys: :atoms!]) do
       {:ok, json} ->
@@ -26,6 +26,9 @@ defmodule YnabApi.Models.User do
       id: user.id
     }
     {:ok, user}
+  end
+  def parse(json = %{error: _error}) do
+    YnabApi.Models.Error.parse(json)
   end
 
   @doc """
