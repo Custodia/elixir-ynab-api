@@ -1,6 +1,8 @@
 defmodule YnabApi.Worker do
   use GenServer, restart: :transient
 
+  require Logger
+
   @base_url "https://api.youneedabudget.com/v1"
   @timeout 900000 # 15 minutes
 
@@ -33,25 +35,25 @@ defmodule YnabApi.Worker do
 
   @impl GenServer
   def handle_info(:timeout, access_token) do
-    {:stop, :shutdown, access_token}
+    {:stop, {:shutdown, :timeout}, access_token}
   end
 
   @impl GenServer
-  def terminate(%HTTPoison.Response{status_code: status_code}, _access_token) do
-    IO.puts "Received invalid response from api (status code: #{status_code})"
+  def terminate(response = %HTTPoison.Response{status_code: status_code}, _access_token) do
+    Logger.warn("Received invalid response from api (#{status_code})", [
+      status_code: status_code,
+      response: response
+    ])
+    Logger.disable(self())
   end
-  def terminate(%HTTPoison.Error{reason: reason}, _access_token) do
-    IO.puts "HTTPoison failed:"
-    IO.inspect reason
+  def terminate(error = %HTTPoison.Error{reason: reason}, _access_token) do
+    Logger.warn("HTTPoison failed:\n#{reason}", [
+      reason: reason,
+      error: error
+    ])
+    Logger.disable(self())
   end
-  def terminate(reason = :normal, _access_token), do: reason
-  def terminate(reason = :shutdown, _access_token), do: reason
-  def terminate(reason = {:shutdown, _term}, _access_token), do: reason
-  def terminate(reason, _access_token) do
-    IO.puts "#{__MODULE__} exited unexpectedly with reason:"
-    IO.inspect reason
-    reason
-  end
+  def terminate({:shutdown, :timeout}, _access_token), do: nil
 
   # Helper functions
 
