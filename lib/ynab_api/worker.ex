@@ -2,6 +2,7 @@ defmodule YnabApi.Worker do
   use GenServer, restart: :transient
 
   require Logger
+  alias YnabApi.Models
 
   @base_url "https://api.youneedabudget.com/v1"
   @timeout 900000 # 15 minutes
@@ -21,19 +22,11 @@ defmodule YnabApi.Worker do
   @impl GenServer
   def handle_continue(:init, access_token) do
     url = "#{@base_url}/user"
-    headers = get_headers(access_token)
 
-    case HTTPoison.get(url, headers) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        case Jason.decode(body) do
-          {:ok, _json} ->
-            {:noreply, access_token, @timeout}
-          {:error, error = %Jason.DecodeError{}} ->
-            {:stop, {:shutdown, error}, access_token}
-        end
-      {:ok, response = %HTTPoison.Response{}} ->
-        {:stop, {:shutdown, response}, access_token}
-      {:error, error = %HTTPoison.Error{}} ->
+    case request_and_parse(access_token, url, Models.User) do
+      {:ok, %Models.User{}} ->
+        {:noreply, access_token, @timeout}
+      {:error, error} ->
         {:stop, {:shutdown, error}, access_token}
     end
   end
@@ -71,4 +64,17 @@ defmodule YnabApi.Worker do
     "Authorization": "Bearer #{access_token}",
     "Accept": "Application/json; Charset=utf-8"
   ]
+
+  defp request_and_parse(access_token, url, model) do
+    headers = get_headers(access_token)
+
+    case HTTPoison.get(url, headers) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        apply(model, :parse, [body])
+      {:ok, response = %HTTPoison.Response{}} ->
+        {:error, response}
+      {:error, error = %HTTPoison.Error{}} ->
+        {:error, error}
+    end
+  end
 end
