@@ -33,7 +33,7 @@ defmodule YnabApi.Models.Error do
   @doc """
   Parses Error struct from binary encoded JSON or already decoded JSON.
 
-  Similar to `parse/1` exceot it will unwrap the error tuple and raise in case of errors.
+  Similar to `parse/1` except it will unwrap the error tuple and raise in case of errors.
   """
   @spec parse!(binary() | map()) :: YnabApi.Models.Error.t | no_return()
   def parse!(json) do

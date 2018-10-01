@@ -45,7 +45,7 @@ defmodule YnabApi.Models.BudgetSummary do
   @doc """
   Parses BudgetSummary struct from binary encoded JSON or already decoded JSON.
 
-  Similar to `parse/1` exceot it will unwrap the error tuple and raise in case of errors.
+  Similar to `parse/1` except it will unwrap the error tuple and raise in case of errors.
   """
   @spec parse!(binary() | map()) :: list(YnabApi.Models.BudgetSummary.t) | no_return()
   def parse!(json) do
