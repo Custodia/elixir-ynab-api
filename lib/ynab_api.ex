@@ -54,6 +54,19 @@ defmodule YnabApi do
   def get_accounts(access_token, budget_id), do:
     call_worker(access_token, {:get_accounts, budget_id})
 
+  @doc """
+  Gets account for given account_id in budget.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.Account for what data is available.
+  """
+  @spec get_account(binary(), binary() | :last_used, binary()) :: return_value(%Models.Account{})
+  def get_account(access_token, :last_used, account_id), do:
+    get_account(access_token, "last-used", account_id)
+  def get_account(access_token, budget_id, account_id), do:
+    call_worker(access_token, {:get_account, budget_id, account_id})
+
   # Helpers
 
   @spec call_worker(binary(), YnabApi.Worker.request) :: {:ok, struct()} | {:ok, list(struct())} | {:error, any()}

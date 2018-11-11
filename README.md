@@ -34,7 +34,7 @@ be found at [https://hexdocs.pm/ynab_api](https://hexdocs.pm/ynab_api).
 The accounts for a budget
 
 - [x] Account list (**GET** budgets/{budget_id}/accounts)
-- [ ] Single account (**GET** budgets/{budget_id}/accounts/{account_id})
+- [x] Single account (**GET** budgets/{budget_id}/accounts/{account_id})
 
 ### Categories
 
