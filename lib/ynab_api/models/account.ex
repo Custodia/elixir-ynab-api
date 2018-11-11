@@ -86,7 +86,7 @@ defmodule YnabApi.Models.Account do
   @spec parse_account_type(binary) :: account_type | no_return()
   defp parse_account_type(account_type_string) when is_binary(account_type_string) do
     if Enum.member?(@account_type_strings, account_type_string) do
-      String.to_existing_atom(account_type_string)
+      String.to_atom(account_type_string)
     else
       raise "Invalid account type #{account_type_string}"
     end
