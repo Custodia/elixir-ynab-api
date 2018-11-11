@@ -8,6 +8,7 @@ defmodule YnabApi do
   alias YnabApi.WorkerSupervisor
   alias YnabApi.Models
 
+  @type budget_id :: binary() | :last_used
   @type return_value(result_type) :: {:ok, result_type} | {:error, any()}
 
   @doc """
@@ -35,7 +36,7 @@ defmodule YnabApi do
 
   See YnabApi.Models.BudgetSettings for what data is available.
   """
-  @spec get_budget_settings(binary(), binary() | :last_used) :: return_value(%Models.BudgetSettings{})
+  @spec get_budget_settings(binary(), budget_id()) :: return_value(%Models.BudgetSettings{})
   def get_budget_settings(access_token, :last_used), do:
     get_budget_settings(access_token, "last-used")
   def get_budget_settings(access_token, budget_id), do:
@@ -48,7 +49,7 @@ defmodule YnabApi do
 
   See YnabApi.Models.Account for what data is available.
   """
-  @spec get_accounts(binary(), binary() | :last_used) :: return_value(list(%Models.Account{}))
+  @spec get_accounts(binary(), budget_id()) :: return_value(list(%Models.Account{}))
   def get_accounts(access_token, :last_used), do:
     get_accounts(access_token, "last-used")
   def get_accounts(access_token, budget_id), do:
@@ -61,7 +62,7 @@ defmodule YnabApi do
 
   See YnabApi.Models.Account for what data is available.
   """
-  @spec get_account(binary(), binary() | :last_used, binary()) :: return_value(%Models.Account{})
+  @spec get_account(binary(), budget_id(), binary()) :: return_value(%Models.Account{})
   def get_account(access_token, :last_used, account_id), do:
     get_account(access_token, "last-used", account_id)
   def get_account(access_token, budget_id, account_id), do:
