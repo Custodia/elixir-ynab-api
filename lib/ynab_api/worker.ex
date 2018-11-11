@@ -69,6 +69,7 @@ defmodule YnabApi.Worker do
     ])
   end
   def terminate({:shutdown, :timeout}, _access_token), do: nil
+  def terminate(reason, _access_token), do: reason
 
   # Helper functions
 
