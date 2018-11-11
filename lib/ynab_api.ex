@@ -68,6 +68,20 @@ defmodule YnabApi do
   def get_account(access_token, budget_id, account_id), do:
     call_worker(access_token, {:get_account, budget_id, account_id})
 
+  @doc """
+  Gets the category groups and categories for a given budget.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.CategoryGroup for what data is available.
+  """
+  @spec get_categories(binary(), budget_id()) :: return_value(list(%Models.CategoryGroup{}))
+  def get_categories(access_token, :last_used), do:
+    get_categories(access_token, "last-used")
+  def get_categories(access_token, budget_id), do:
+    call_worker(access_token, {:get_categories, budget_id})
+
+
   # Helpers
 
   @spec call_worker(binary(), YnabApi.Worker.request) :: {:ok, struct()} | {:ok, list(struct())} | {:error, any()}
