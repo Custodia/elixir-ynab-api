@@ -13,7 +13,7 @@ defmodule YnabApi.Models.BudgetSettings do
   @doc """
   Parses BudgetSettings struct from json binary encoded JSON or already decoded JSON.
   """
-  @spec parse(binary() | map()) :: {:ok, YnabApi.Models.BudgetSettings.t} | {:error, YnabApi.Models.Error.t} | {:error, Jason.DecodeError.t}
+  @spec parse(binary() | map()) :: {:ok, t} | {:error, YnabApi.Models.Error.t} | {:error, Jason.DecodeError.t}
   def parse(json) when is_binary(json)do
     case Jason.decode(json, [keys: :atoms!]) do
       {:ok, json} ->

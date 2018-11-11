@@ -8,6 +8,8 @@ defmodule YnabApi do
   alias YnabApi.WorkerSupervisor
   alias YnabApi.Models
 
+  @type return_value(result_type) :: {:ok, result_type} | {:error, any()}
+
   @doc """
   Gets user information from YNAB api.
 
@@ -22,7 +24,7 @@ defmodule YnabApi do
 
   See YnabApi.Models.BudgetSummary for what data is available.
   """
-  @spec get_budgets(binary()) :: {:ok, list(%Models.BudgetSummary{})} | {:error, any()}
+  @spec get_budgets(binary()) :: return_value(list(%Models.BudgetSummary{}))
   def get_budgets(access_token), do:
     call_worker(access_token, :get_budgets)
 
@@ -33,7 +35,7 @@ defmodule YnabApi do
 
   See YnabApi.Models.BudgetSettings for what data is available.
   """
-  @spec get_budget_settings(binary(), binary() | :last_used) :: {:ok, %Models.BudgetSettings{}} | {:error, any()}
+  @spec get_budget_settings(binary(), binary() | :last_used) :: return_value(%Models.BudgetSettings{})
   def get_budget_settings(access_token, :last_used), do:
     get_budget_settings(access_token, "last-used")
   def get_budget_settings(access_token, budget_id), do:
