@@ -24,3 +24,5 @@ ynab_api-*.tar
 
 # Ignore script files in root folder
 /*.exs
+
+.#*
