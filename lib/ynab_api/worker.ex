@@ -7,7 +7,7 @@ defmodule YnabApi.Worker do
   @base_url "https://api.youneedabudget.com/v1"
   @timeout 900000 # 15 minutes
 
-  @type request :: :get_user | :get_budgets | {:get_budget_settings, binary()}
+  @type request :: :get_user | :get_budgets | {:get_budget_settings, binary()} | {:get_accounts, binary()}
 
   def start_link(access_token) do
     name = get_name(access_token)
@@ -40,6 +40,8 @@ defmodule YnabApi.Worker do
     request_and_parse_case(access_token, "#{@base_url}/budgets", Models.BudgetSummary)
   def handle_call({:get_budget_settings, budget_id}, _from, access_token), do:
     request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/settings", Models.BudgetSettings)
+  def handle_call({:get_accounts, budget_id}, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/accounts", Models.Account)
 
   @impl GenServer
   def handle_info(:timeout, access_token) do
