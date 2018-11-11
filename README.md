@@ -49,8 +49,8 @@ The categories for a budget
 
 The payees for a budget
 
-- [ ] List payees (**GET** budgets/{budget_id}/payees)
-- [ ] Single payee (**GET** budgets/{budget_id}/payees/{payee_id})
+- [x] List payees (**GET** budgets/{budget_id}/payees)
+- [x] Single payee (**GET** budgets/{budget_id}/payees/{payee_id})
 
 ### Payee Locations
 
