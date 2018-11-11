@@ -41,7 +41,7 @@ The accounts for a budget
 The categories for a budget
 
 - [x] List categories (**GET** budgets/{budget_id}/categories)
-- [ ] Single category (**GET** budgets/{budget_id}/categories/{category_id})
+- [x] Single category (**GET** budgets/{budget_id}/categories/{category_id})
 - [ ] Single category for a specific budget month (**GET** budgets/{budget_id}/months/{month}/categories/{category_id})
 - [ ] Update an existing month category (**PATCH** budgets/{budget_id}/months/{month}/categories/{category_id})
 

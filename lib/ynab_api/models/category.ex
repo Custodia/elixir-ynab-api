@@ -30,14 +30,28 @@ defmodule YnabApi.Models.Category do
   @doc """
   Parses Category struct from decoded JSON.
   """
-  @spec parse(map()) :: {:ok, list(YnabApi.Models.Category.t)} | no_return()
-  def parse(categories) do
+  @spec parse(binary() | map() | list()) :: {:ok, list(YnabApi.Models.Category.t)} | no_return()
+  def parse(json) when is_binary(json)do
+    case Jason.decode(json, [keys: :atoms!]) do
+      {:ok, json} ->
+        parse(json)
+      error ->
+        error
+    end
+  end
+  def parse(%{data: %{category: category}}) do
+    {:ok, parse_individual(category)}
+  end
+  def parse(categories) when is_list(categories) do
     categories =
       categories
       |> Enum.map(&parse_individual/1)
       |> Enum.to_list()
 
     {:ok, categories}
+  end
+  def parse(json = %{error: _error}) do
+    YnabApi.Models.Error.parse(json)
   end
 
   @doc """
