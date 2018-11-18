@@ -7,7 +7,7 @@ defmodule YnabApi.Worker do
   @base_url "https://api.youneedabudget.com/v1"
   @timeout 900000 # 15 minutes
 
-  @type request :: :get_user | :get_budgets | {:get_budget_settings, binary()} | {:get_accounts, binary()} | {:get_account, binary(), binary()} | {:get_categories, binary()} | {:get_category, binary(), binary()} | {:get_payees, binary()} | {:get_payee, binary(), binary()}
+  @type request :: :get_user | :get_budgets | {:get_budget_settings, binary()} | {:get_accounts, binary()} | {:get_account, binary(), binary()} | {:get_categories, binary()} | {:get_category, binary(), binary()} | {:get_payees, binary()} | {:get_payee, binary(), binary()} | {:get_payee_locations, binary()} | {:get_payee_locations, binary(), binary()} | {:get_payee_location, binary(), binary()} | {:get_all_transactions, binary()} | {:get_account_transactions, binary(), binary()} | {:get_category_transactions, binary(), binary()} | {:get_payee_transactions, binary(), binary()} | {:get_transaction, binary(), binary()}
 
   def start_link(access_token) do
     name = get_name(access_token)
@@ -52,6 +52,22 @@ defmodule YnabApi.Worker do
     request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/payees", Models.Payee)
   def handle_call({:get_payee, budget_id, payee_id}, _from, access_token), do:
     request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/payees/#{payee_id}", Models.Payee)
+  def handle_call({:get_payee_locations, budget_id}, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/payee_locations", Models.PayeeLocation)
+  def handle_call({:get_payee_locations, budget_id, payee_id}, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/payees/#{payee_id}/payee_locations", Models.PayeeLocation)
+  def handle_call({:get_payee_location, budget_id, payee_location_id}, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/payee_locations/#{payee_location_id}", Models.PayeeLocation)
+  def handle_call({:get_all_transactions, budget_id}, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/transactions", Models.Transaction)
+  def handle_call({:get_account_transactions, budget_id, account_id}, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/accounts/#{account_id}/transactions", Models.Transaction)
+  def handle_call({:get_category_transactions, budget_id, category_id}, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/categories/#{category_id}/transactions", Models.HybridTransaction)
+  def handle_call({:get_payee_transactions, budget_id, payee_id}, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/payees/#{payee_id}/transactions", Models.HybridTransaction)
+  def handle_call({:get_transaction, budget_id, transaction_id}, _from, access_token), do:
+    request_and_parse_case(access_token, "#{@base_url}/budgets/#{budget_id}/transactions/#{transaction_id}", Models.Transaction)
 
   @impl GenServer
   def handle_info(:timeout, access_token) do

@@ -56,9 +56,9 @@ The payees for a budget
 
 When you enter a transaction and specify a payee on the YNAB mobile apps, the GPS coordinates for that location are stored, with your permission, so that the next time you are in the same place (like the Grocery store) we can pre-populate nearby payees for you! It’s handy and saves you time. This resource makes these locations available. Locations will not be available for all payees.
 
-- [ ] List payee locations (**GET** budgets/{budget_id}/payee_locations)
-- [ ] Single payee location (**GET** budgets/{budget_id}/payee_locations/{payee_location_id})
-- [ ] List locations for a payee (**GET** budgets/{budget_id}/payees/{payee_id}/payee_locations)
+- [x] List payee locations (**GET** budgets/{budget_id}/payee_locations)
+- [x] Single payee location (**GET** budgets/{budget_id}/payee_locations/{payee_location_id})
+- [x] List locations for a payee (**GET** budgets/{budget_id}/payees/{payee_id}/payee_locations)
 
 ### Months
 
@@ -71,13 +71,13 @@ Each budget contains one or more months, which is where To be Budgeted, Age of M
 
 The transactions for a budget
 
-- [ ] List transactions (**GET** budgets/{budget_id}/transactions)
+- [x] List transactions (**GET** budgets/{budget_id}/transactions)
 - [ ] Create a single transaction or multiple transactions (**POST** budgets/{budget_id}/transactions)
 - [ ] Bulk create transactions (**POST** budgets/{budget_id}/transactions/bulk)
-- [ ] List account transactions (**GET** budgets/{budget_id}/accounts/{account_id}/transactions)
-- [ ] List category transactions (**GET** budgets/{budget_id}/categories/{category_id}/transactions)
-- [ ] List payee transactions (**GET** budgets/{budget_id}/payees/{payee_id}/transactions)
-- [ ] Single transaction (**GET** budgets/{budget_id}/transactions/{transaction_id})
+- [x] List account transactions (**GET** budgets/{budget_id}/accounts/{account_id}/transactions)
+- [x] List category transactions (**GET** budgets/{budget_id}/categories/{category_id}/transactions)
+- [x] List payee transactions (**GET** budgets/{budget_id}/payees/{payee_id}/transactions)
+- [x] Single transaction (**GET** budgets/{budget_id}/transactions/{transaction_id})
 - [ ] Updates an existing transaction (**PUT** budgets/{budget_id}/transactions/{transaction_id})
 
 ### Scheduled Transactions

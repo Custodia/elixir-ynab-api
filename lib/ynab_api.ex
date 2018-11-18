@@ -120,13 +120,113 @@ defmodule YnabApi do
   def get_payee(access_token, budget_id, payee_id), do:
     call_worker(access_token, {:get_payee, budget_id, payee_id})
 
+  @doc """
+  Gets the payee locations for a given budget.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  Optionally a payee id can be given in which case only ocations for that payee will be returned.
+
+  See YnabApi.Models.PayeeLocation for what data is available.
+  """
+  @spec get_payee_locations(binary(), budget_id()) :: return_value(list(%Models.PayeeLocation{}))
+  def get_payee_locations(access_token, budget_id, payee_id \\ nil)
+  def get_payee_locations(access_token, :last_used, payee_id), do:
+    get_payee_locations(access_token, "last-used", payee_id)
+  def get_payee_locations(access_token, budget_id, payee_id) do
+    case payee_id do
+      nil ->
+        call_worker(access_token, {:get_payee_locations, budget_id})
+      _ ->
+        call_worker(access_token, {:get_payee_locations, budget_id, payee_id})
+    end
+  end
+
+  @doc """
+  Gets payee location for given payee location id in budget.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.PayeeLocation for what data is available.
+  """
+  @spec get_payee_location(binary(), budget_id(), binary()) :: return_value(%Models.PayeeLocation{})
+  def get_payee_location(access_token, :last_used, payee_location_id), do:
+    get_payee_location(access_token, "last-used", payee_location_id)
+  def get_payee_location(access_token, budget_id, payee_location_id), do:
+    call_worker(access_token, {:get_payee_location, budget_id, payee_location_id})
+
+  @doc """
+  Gets all the transactions for a given budget.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.Transaction for what data is available.
+  """
+  @spec get_all_transactions(binary(), budget_id()) :: return_value(list(%Models.Transaction{}))
+  def get_all_transactions(access_token, :last_used), do:
+    get_all_transactions(access_token, "last-used")
+  def get_all_transactions(access_token, budget_id), do:
+    call_worker(access_token, {:get_all_transactions, budget_id})
+
+  @doc """
+  Gets the transactions for a given account.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.Transaction for what data is available.
+  """
+  @spec get_account_transactions(binary(), budget_id(), binary()) :: return_value(list(%Models.Transaction{}))
+  def get_account_transactions(access_token, :last_used, account_id), do:
+    get_account_transactions(access_token, "last-used", account_id)
+  def get_account_transactions(access_token, budget_id, account_id), do:
+    call_worker(access_token, {:get_account_transactions, budget_id, account_id})
+
+  @doc """
+  Gets all the transactions for a given category.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.Transaction for what data is available.
+  """
+  @spec get_category_transactions(binary(), budget_id(), binary()) :: return_value(list(%Models.HybridTransaction{}))
+  def get_category_transactions(access_token, :last_used, category_id), do:
+    get_category_transactions(access_token, "last-used", category_id)
+  def get_category_transactions(access_token, budget_id, category_id), do:
+    call_worker(access_token, {:get_category_transactions, budget_id, category_id})
+
+  @doc """
+  Gets all the transactions for a given payee.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.Transaction for what data is available.
+  """
+  @spec get_payee_transactions(binary(), budget_id(), binary()) :: return_value(list(%Models.HybridTransaction{}))
+  def get_payee_transactions(access_token, :last_used, payee_id), do:
+    get_payee_transactions(access_token, "last-used", payee_id)
+  def get_payee_transactions(access_token, budget_id, payee_id), do:
+    call_worker(access_token, {:get_payee_transactions, budget_id, payee_id})
+
+  @doc """
+  Gets transaction for given transaction in budget.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.Transaction for what data is available.
+  """
+  @spec get_transaction(binary(), budget_id(), binary()) :: return_value(%Models.Transaction{})
+  def get_transaction(access_token, :last_used, transaction_id), do:
+    get_transaction(access_token, "last-used", transaction_id)
+  def get_transaction(access_token, budget_id, transaction_id), do:
+    call_worker(access_token, {:get_transaction, budget_id, transaction_id})
+
   # Helpers
 
   @spec call_worker(binary(), YnabApi.Worker.request) :: {:ok, struct()} | {:ok, list(struct())} | {:error, any()}
   defp call_worker(access_token, request) do
     case WorkerSupervisor.get_or_start_child(access_token) do
       {:ok, pid} ->
-        case GenServer.call(pid, request) do
+        case GenServer.call(pid, request, 50_000) do
           result = {:ok, _result} ->
             result
           error_tuple = {:error, _error} ->

@@ -44,7 +44,7 @@ defmodule YnabApi.Models.Account do
 
     {:ok, accounts}
   end
-  def parse(%{data: %{account: account}}), do:
+  def parse(json = %{data: %{account: account}}), do:
     {:ok, parse_individual(account)}
   def parse(json = %{error: _error}), do:
     YnabApi.Models.Error.parse(json)
