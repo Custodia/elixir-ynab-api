@@ -84,5 +84,5 @@ The transactions for a budget
 
 The scheduled transactions for a budget
 
-- [ ] List scheduled transactions (**GET** budgets/{budget_id}/scheduled_transactions)
-- [ ] Single scheduled transaction (**GET** budgets/{budget_id}/scheduled_transactions/{scheduled_transaction_id})
+- [x] List scheduled transactions (**GET** budgets/{budget_id}/scheduled_transactions)
+- [x] Single scheduled transaction (**GET** budgets/{budget_id}/scheduled_transactions/{scheduled_transaction_id})

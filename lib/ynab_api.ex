@@ -208,7 +208,7 @@ defmodule YnabApi do
     call_worker(access_token, {:get_payee_transactions, budget_id, payee_id})
 
   @doc """
-  Gets transaction for given transaction in budget.
+  Gets transaction for given transaction id in budget.
 
   Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
 
@@ -219,6 +219,32 @@ defmodule YnabApi do
     get_transaction(access_token, "last-used", transaction_id)
   def get_transaction(access_token, budget_id, transaction_id), do:
     call_worker(access_token, {:get_transaction, budget_id, transaction_id})
+
+  @doc """
+  Gets all scheduled transactions.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.ScheduledTransaction for what data is available.
+  """
+  @spec get_scheduled_transactions(binary(), budget_id()) :: return_value(list(%Models.ScheduledTransaction{}))
+  def get_scheduled_transactions(access_token, :last_used), do:
+    get_scheduled_transactions(access_token, "last-used")
+  def get_scheduled_transactions(access_token, budget_id), do:
+    call_worker(access_token, {:get_scheduled_transactions, budget_id})
+
+  @doc """
+  Gets scheduled transaction for given id in budget.
+
+  Can specify the UUID of the given budget or the atom :last_used to specify the last used budget.
+
+  See YnabApi.Models.ScheduledTransaction for what data is available.
+  """
+  @spec get_scheduled_transaction(binary(), budget_id(), binary()) :: return_value(%Models.ScheduledTransaction{})
+  def get_scheduled_transaction(access_token, :last_used, transaction_id), do:
+    get_scheduled_transaction(access_token, "last-used", transaction_id)
+  def get_scheduled_transaction(access_token, budget_id, transaction_id), do:
+    call_worker(access_token, {:get_scheduled_transaction, budget_id, transaction_id})
 
   # Helpers
 
