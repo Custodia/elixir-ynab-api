@@ -34,7 +34,7 @@ defmodule YnabApi.Models.ScheduledTransaction do
   """
   @spec parse(binary() | map()) :: {:ok, YnabApi.Models.ScheduledTransaction.t} | {:error, YnabApi.Models.Error.t} | {:error, Jason.DecodeError.t}
   def parse(json) when is_binary(json)do
-    case Jason.decode(json, [keys: :atoms!]) do
+    case Jason.decode(json, [keys: :atoms]) do
       {:ok, json} ->
         parse(json)
       error ->

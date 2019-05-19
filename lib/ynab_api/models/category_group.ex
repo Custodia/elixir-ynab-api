@@ -21,7 +21,7 @@ defmodule YnabApi.Models.CategoryGroup do
   """
   @spec parse(binary() | map()) :: {:ok, list(YnabApi.Models.CategoryGroup.t)} | {:error, YnabApi.Models.Error.t} | {:error, Jason.DecodeError.t} | no_return()
   def parse(json) when is_binary(json)do
-    case Jason.decode(json, [keys: :atoms!]) do
+    case Jason.decode(json, [keys: :atoms]) do
       {:ok, json} ->
         parse(json)
       error ->
